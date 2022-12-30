@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Sayısal Loto Oyunu</h1>
+    <p>Aşağıdaki inputlara tahminlerini giriniz;</p>
+    <input type="text" name="number1" id="number1">
+    <input type="text" name="number2" id="number2">
+    <input type="text" name="number3" onclick="ControlSameNumber(2)" id="number3">
+    <input type="text" name="number4" onclick="ControlSameNumber(3)" id="number4">
+    <input type="text" name="number5" onclick="ControlSameNumber(4)" id="number5">
+    <input type="text" name="number6" onclick="ControlSameNumber(5)" onkeyup="ControlSameNumber(6)" id="number6">
+    <input type="submit" onclick="PredictNumbers()" id="inputnumbers" value="Tahmin gir">
+    <p id="lotterinputokey" style="display: none;">Tahminler girildi</p>
+    <hr>
+    <input type="submit" id="getlottery" onclick="GenerateLotteryNumber()" disabled value="Kurayı Çek">
+    <p>Loto Sayıları</p>
+    <input type="text" disabled name="lotterynumber1" id="lotterynumber1">
+    <input type="text" disabled name="lotterynumber2" id="lotterynumber2">
+    <input type="text" disabled name="lotterynumber3" id="lotterynumber3">
+    <input type="text" disabled name="lotterynumber4" id="lotterynumber4">
+    <input type="text" disabled name="lotterynumber5" id="lotterynumber5">
+    <input type="text" disabled name="lotterynumber6" id="lotterynumber6"> <br>
+    <p id="result"></p>
+    <p id="result2"></p>
+
+    <script>
+
+        function PredictNumbers() {
+            ControlSameNumber(6);
+            let control = ControlNumbers();
+            if (control) {
+                document.getElementById("lotterinputokey").style.display = "block";
+                document.getElementById("inputnumbers").disabled = true;
+                document.getElementById("getlottery").disabled = false;
+                console.log(document.getElementById("getlottery").disabled);
+                SortPredictNumbers();
+                
+
+            }
+            else {
+                    alert("1-49 sayıları arasında tahminler girmelisiniz");
+            }
+
+        }
+        function ControlNumbers() {
+            let controlcheck = true;
+            for (let i = 1; i < 7; i++) {
+                let number = parseInt(document.getElementById("number" + i).value)
+                if (number >= 1 && number <= 49) {
+
+                }
+                else {
+                    controlcheck = false;
+                }
+            }
+            return controlcheck
+
+        }
+
+        function ControlSameNumber(len) {
+            let isvalidsamenumber = true;
+
+            let predictnumbers = [];
+            for (let i = 1; i <= len; i++) {
+                let number = parseInt(document.getElementById("number" + i).value);
+                predictnumbers.push(number);
+            }
+
+            const set = new Set(predictnumbers);
+            const duplicates = predictnumbers.filter(item => {
+                if (set.has(item)) {
+                    set.delete(item);
+                }
+                else {
+                    return item;
+                }
+            });
+
+            duplicates.length==0 ? isvalidsamenumber=false:isvalidsamenumber=true;
+
+            if(duplicates.length !=0){
+                alert("Aynı tahmin bir kez girilebilir.");
+                for (let i = 0; i < duplicates.length; i++) {
+                    
+                    for (let j = len; j>0; j--) {
+                        let num=parseInt( document.getElementById("number" + j).value);
+                        if (duplicates[i]==num){
+                            document.getElementById("number" + j).value="";
+                            break;
+                        }
+                        
+                    }
+                    
+                }
+
+            }
+
+
+            return isvalidsamenumber
+        }
+
+        function SortPredictNumbers(){
+            let predictnumbers = [];
+            for (let i = 1; i <= 6; i++) {
+                let number = parseInt(document.getElementById("number" + i).value);
+                predictnumbers.push(number);
+            }
+            let sortnumbers=predictnumbers.sort(function(a,b){return a-b});
+            console.log(sortnumbers);
+
+            for (let j = 1; j <= 6; j++) {
+                document.getElementById("number" + j).value=sortnumbers[j-1];
+            }
+
+
+        }
+        function GenerateLotteryNumber(){
+            let lotterynumbers=[];
+            let gennum;
+        
+            for (let i = 0; i<6; i++) {
+                
+                gennum=Math.floor(Math.random()*49)+1;
+                lotterynumbers.push(gennum);
+                const set = new Set(lotterynumbers);
+                const lotteryduplicates = lotterynumbers.filter(item => {
+                if (set.has(item)) {
+                    set.delete(item);
+                }
+                else {
+                    return item;
+                }
+            });
+                if(lotteryduplicates !=0){
+                    lotterynumbers.pop(gennum);
+                    i=i-1;
+                }
+
+            }
+            let sortlotterynumbers=lotterynumbers.sort(function(a,b){return a-b});
+            for (let j = 1; j <= 6; j++) {
+                document.getElementById("lotterynumber" + j).value=sortlotterynumbers[j-1];
+            }
+
+            CompareNumbers();
+
+            
+
+        }
+        function CompareNumbers(){
+            let findnumber=0;
+            document.getElementById("result").innerHTML="Bilinen sayılar:";
+            for (let i = 1; i < 7; i++) {
+                let predictednumber = parseInt(document.getElementById("number" + i).value);
+                for (let j = 1; j < 7; j++) {
+                    let lotterynumber=parseInt(document.getElementById("lotterynumber" + j).value);
+                    if(predictednumber==lotterynumber){
+                        findnumber=findnumber+1;
+                        document.getElementById("result").innerHTML +=predictednumber +" ";
+
+                    }
+                }
+                
+            }
+            document.getElementById("result2").innerHTML=findnumber+" adet sayı bildiniz";
+        }
+       
+
+    </script>
+
+
+</body>
+
+</html>
